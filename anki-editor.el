@@ -656,12 +656,13 @@ Where the subtree is created depends on PREFIX."
 	 (format (anki-editor-entry-format))
 	 (begin (cl-loop for eoh = (org-element-property :contents-begin element)
                                   then (org-element-property :end subelem)
+                                  while eoh
                                   for subelem = (progn
                                                   (goto-char eoh)
                                                   (org-element-context))
                                   while (memq (org-element-type subelem)
                                               '(drawer planning property-drawer))
-                                  finally return (org-element-property :begin subelem)))
+                                  finally return (and eoh (org-element-property :begin subelem))))
 	 (end (org-element-property :contents-end element))
 	 (raw (or (and begin
                                 end
@@ -692,12 +693,13 @@ Return a list of cons of (FIELD-NAME . FIELD-CONTENT)."
              ;; elements and reset contents-begin.
              for begin = (cl-loop for eoh = (org-element-property :contents-begin element)
                                   then (org-element-property :end subelem)
+                                  while eoh
                                   for subelem = (progn
                                                   (goto-char eoh)
                                                   (org-element-context))
                                   while (memq (org-element-type subelem)
                                               '(drawer planning property-drawer))
-                                  finally return (org-element-property :begin subelem))
+                                  finally return (and eoh (org-element-property :begin subelem)))
              for end = (org-element-property :contents-end element)
              for raw = (or (and begin
                                 end
